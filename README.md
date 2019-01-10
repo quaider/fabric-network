@@ -9,31 +9,31 @@ cryptogen generate --config=./crypto-config.yaml
 
 ### Generating Orderer Genesis block
 ```shell
-configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+configtxgen -profile OneOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block -channelID cnabs
 ```
 
 ###  Generating channel configuration transaction 'channel.tx'
 
 ``` shell
-configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID cnabs
+configtxgen -profile OneOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID cnabs
 ```
 
 ### Generating anchor peer update for Org1MSP
 ``` shell
-configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID cnabs -asOrg Org1MSP
+configtxgen -profile OneOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID cnabs -asOrg Org1MSP
 ```
 
 
 ### Generating anchor peer update for Org2MSP
 ``` shell
-configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID cnabs -asOrg Org2MSP
+configtxgen -profile OneOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID cnabs -asOrg Org2MSP
 ```
 
 ## Channel
 
 ### Create channel
 ```shell
-peer channel create -o orderer.example.com:7050 -c cnabs -f ./channel-artifacts/channel.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel create -o orderer.cnabs.com:7050 -c cnabs -f ./channel-artifacts/channel.tx
 ```
 
 ### Peer join channel
@@ -43,5 +43,5 @@ peer channel join -b cnabs.block
 
 ### Update Anchor peer node
 ```shell
-peer channel update -o orderer.example.com:7050 -c cnabs -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel update -o orderer.cnabs.com:7050 -c cnabs -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/msp/tlscacerts/tlsca.cnabs.com-cert.pem
 ```

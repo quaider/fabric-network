@@ -18,12 +18,11 @@ services:
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.org1.cnabs.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org1.cnabs.com/users/Admin@org1.cnabs.com/msp
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.cnabs.com/users/Admin@org1.cnabs.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./cnabs.tx:/opt/gopath/src/github.com/hyperledger/fabric/peer/cnabs.tx
-        # - ./../chaincode/:/opt/gopath/src/github.com/
-        - ../peers/configs:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
