@@ -27,6 +27,17 @@ Organizations:
         # MSPDir is the filesystem path which contains the MSP configuration
         MSPDir: crypto-config/ordererOrganizations/cnabs.com/msp
 
+        Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+          Writers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+          Admins:
+              Type: Signature
+              Rule: "OR('OrdererMSP.admin')"
+
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
@@ -36,6 +47,20 @@ Organizations:
         ID: Org1MSP
 
         MSPDir: crypto-config/peerOrganizations/org1.cnabs.com/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+        Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('Org1MSP.admin')"
 
         # leave this flag set to true.
         AnchorPeers:
@@ -156,6 +181,25 @@ Orderer: &OrdererDefaults
     # Organizations is the list of orgs which are defined as participants on
     # the orderer side of the network
     Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Orderer policies, their canonical path is
+    #   /Channel/Orderer/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the orderer for the peer to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
 
 ################################################################################
 #
