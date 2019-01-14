@@ -32,6 +32,11 @@ services:
     image: hyperledger/fabric-peer
     environment: 
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # https://docs.docker.com/compose/networking/
+      # CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE 这个配置非常重要，虽然不明白其具体含义，但是如果没有这个配置的话，链码所在
+      # 的容器将与去其他节点的容器处于不同的网络中，这意味着链码容器无法访问到其他的容器(如实例化时的peer)，比如报错 域名解析错误，
+      # 所以猜测是用来指定容器网络的配置(但又不是容器自身)
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=blockchain_cnabs
       - CORE_PEER_ID=peer0.org1.cnabs.com
       - CORE_LOGGING_PEER=debug
       - CORE_CHAINCODE_LOGGING_LEVEL=debug
@@ -61,6 +66,7 @@ services:
     environment:
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org1.cnabs:7052
       - FABRIC_LOGGING_SPEC=DEBUG
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_ID=cli

@@ -55,9 +55,12 @@ doc
 ## Chaincode
 
 ### Install chaincode
+这里也是使用的Admin用户的msp，特别需要注意的是GO语言的链码，不需要/opt/gopath/src全路径，只需要到github.com/chaincode就行了。
+非go语言的链码，则必须需要全路径，否则安装会报错（报错信息也没有指明是找不到链码，排错相当麻烦），如java需要的则需要全路径，到源码所在根目录
 ``` shell
 # GO环境直接是 github.com/chaincode/go，不需要全路径
-export CC_SRC_PATH=github.com/chaincode/chaincode_example02/go/
+export CC_SRC_PATH=github.com/chaincode/
+#for java: export CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/
 peer chaincode install -n mycc -v 1.0 -l java -p ${CC_SRC_PATH}
 peer chaincode install -n mycc -v 1.0 -p ${CC_SRC_PATH}
 ```
@@ -65,7 +68,8 @@ peer chaincode install -n mycc -v 1.0 -p ${CC_SRC_PATH}
 ### Instantiate chaincode
 实例化时需要指定背书策略 -P, 不指定则使用默认策略
 ``` shell
-peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"
+peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.0 -l java -c '{"Args":["init"]}' -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"  
+#--peerAddresses peer0.org1.cnabs.com:7051
 
 peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')" >&log.txt
 ```
