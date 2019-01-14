@@ -51,24 +51,31 @@ peer channel join -b cnabs.block
 ```shell
 peer channel update -o orderer.cnabs.com:7050 -c cnabs -f /etc/hyperledger/configtx/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/msp/tlscacerts/tlsca.cnabs.com-cert.pem
 ```
-
+doc
 ## Chaincode
 
 ### Install chaincode
 ``` shell
-export CC_SRC_PATH=/opt/gopath/src/github.com/go
-peer chaincode install -n mycc -v 1.0.0 -l java -p ${CC_SRC_PATH}
-peer chaincode install -n mycc -v 1.0.0 -p ${CC_SRC_PATH}
+# GO环境直接是 github.com/chaincode/go，不需要全路径
+export CC_SRC_PATH=github.com/chaincode/chaincode_example02/go/
+peer chaincode install -n mycc -v 1.0 -l java -p ${CC_SRC_PATH}
+peer chaincode install -n mycc -v 1.0 -p ${CC_SRC_PATH}
 ```
 
 ### Instantiate chaincode
 实例化时需要指定背书策略 -P, 不指定则使用默认策略
 ``` shell
-peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -l golang -v 1.0.0 -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer')"
+peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"
 
 peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')" >&log.txt
 ```
 
+### Invoke chaincode
+
+#### Query
+``` shell
+peer chaincode query -C cnabs -n mycc -c '{"Args":["query","a"]}'
+```
 
 ## 安装过程的错误
 * 链码安装报错如下
