@@ -45,9 +45,12 @@ services:
       - CORE_PEER_ADDRESS=peer0.org1.cnabs.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer node start
+    # --peer-chaincodedev=true用于开启dev模式，生成环境去掉即可
+    command: peer node start --peer-chaincodedev=true
+    # peer容器的7052端口用于 chaincode连接到peer节点(容器)
     ports: 
       - 7051:7051
+      - 7052:7052
       - 7053:7053
     volumes: 
       - /var/run/:/host/var/run/
