@@ -57,6 +57,8 @@ peer channel update -o orderer.cnabs.com:7050 -c cnabs -f /etc/hyperledger/confi
 
 ## Chaincode
 
+下面的步骤需要在CLI容器中进行了
+
 ### Install chaincode
 
 这里也是使用的Admin用户的msp，特别需要注意的是GO语言的链码，不需要/opt/gopath/src全路径，只需要到github.com/chaincode就行了。
