@@ -31,3 +31,5 @@ gen/
 proguard/
 *.log
 chaincode-demo/gradle/wrapper/
+/chaincode-demo/gradle
+/chaincode-demo/out
