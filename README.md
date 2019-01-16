@@ -42,7 +42,19 @@ echo $CORE_PEER_MSPCONFIGPATH
 peer channel create -o orderer.cnabs.com:7050 -c cnabs -f /etc/hyperledger/configtx/channel.tx
 ```
 
+通道创建后，peer节点会获取到一个channel的创世区块(由order发放)，该区块用于后续peer加入通道。
+
 ### Peer join channel
+需要说明的是组织类的其他节点并没有从order获取channel的创世区块(如 cnabs.block)，此时是没有办法加入通道的，因此必须先获取区块（copy或从order Fetch）
+
+``` shell
+# 获取区块 peer channel fetch <newest|oldest|config|(number)> [outputfile] [flags]
+peer channel fetch 0 -o orderer.cnabs.com:7050 -c cnabs
+# 在本地生成了 cnabs_0.block，不太确定 fetch参数是否正确，但测试中节点还是加入了通道
+```
+
+将peer节点加入通道(前提是已经获取了区块)
+
 ```shell
 peer channel join -b cnabs.block
 ```
@@ -75,7 +87,7 @@ peer chaincode install -n mycc -v 1.0 -p ${CC_SRC_PATH}
 ### Instantiate chaincode
 实例化时需要指定背书策略 -P, 不指定则使用默认策略
 ``` shell
-peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.0 -l java -c '{"Args":["init"]}' -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"  
+peer chaincode instantiate -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.0 -l java -c '{"Args":["init"]}' -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"
 #--peerAddresses peer0.org1.cnabs.com:7051
 
 peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')" >&log.txt
