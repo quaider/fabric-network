@@ -1,0 +1,12 @@
+
+host1  -> orderer、peer0.org1(anchor)、peer1.org2
+
+host2  -> peer1.org1、peer0.org2(anchor)、cli 
+
+启动顺序
+
+host1 -> orderer -> peer0.org1
+host2 -> peer0.org2
+
+host1 -> peer1.org2
+host2 -> peer1.org1 -> cli

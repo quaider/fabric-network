@@ -120,6 +120,12 @@ peer chaincode upgrade -o orderer.cnabs.com:7050 -C cnabs -n mycc -v 1.1 -c '{"A
 # --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 ```
 
+## 端口说明
+
+- 7051：peer gRPC 服务监听端口
+- 7052：一般用在peer与链码docker容器通信（cli）
+- 7053：peer 事件服务端口，一般用来监听数据，用在HubEvent
+
 ## 调试模式
 
 正常情况下，每次更改链码都需要将链码安装到peer节点，升级链码，调试时只能依靠打日志的方式进行问题的排查，严重影响

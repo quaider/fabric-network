@@ -1,0 +1,21 @@
+version: '2'
+
+services: 
+  
+  orderer.cnabs.com:
+    container_name: orderer.cnabs.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+      - ./channel-artifacts/:/etc/hyperledger/configtx
+      - ./crypto-config/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/:/etc/hyperledger/msp/orderer
