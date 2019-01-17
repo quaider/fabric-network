@@ -95,6 +95,8 @@ peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc 
 
 ### Invoke chaincode
 
+进行链码调用前，必须现在目标节点上安装链码，否则会抛出 目标节点上找不到链码的 error
+
 #### Query
 ``` shell
 peer chaincode query -C cnabs -n mycc -c '{"Args":["query","user1"]}'
@@ -103,7 +105,7 @@ peer chaincode query -C cnabs -n mycc -c '{"Args":["query","user1"]}'
 #### Invoke
 
 ``` shell
-peer chaincode invoke -o orderer.cnabs.com:7050 -C cnabs -n mycc -c '{"Args":["invoke","user1","4"]}'
+peer chaincode invoke -o orderer.cnabs.com:7050 -C cnabs -n mycc -c '{"Args":["invoke","add","user1","4"]}'
 ```
 
 ### Upgrade chaincode

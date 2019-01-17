@@ -12,7 +12,7 @@ services:
       service: peer-base
     environment: 
       - CORE_PEER_ID=peer1.org1.cnabs.com
-      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_ADDRESS=peer1.org1.cnabs.com:7151
       - CORE_PEER_CHAINCODELISTENADDRESS=peer1.org1.cnabs.com:7152
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.cnabs.com:7151
@@ -28,11 +28,11 @@ services:
     volumes: 
       - /var/run/:/host/var/run/
       - ./channel-artifacts:/etc/hyperledger/configtx
-      - ./crypto-config/peerOrganizations/org2.cnabs.com/users:/etc/hyperledger/msp/users
-      - ./crypto-config/peerOrganizations/org2.cnabs.com/peers/peer1.org2.cnabs.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/org1.cnabs.com/users:/etc/hyperledger/msp/users
+      - ./crypto-config/peerOrganizations/org1.cnabs.com/peers/peer1.org1.cnabs.com/msp:/etc/hyperledger/msp/peer
     extra_hosts:
-      - "orderer.cnabs.com:192.168.32.129"
-      - "peer0.org1.cnabs.com:192.168.32.129"
-      - "peer1.org1.cnabs.com:192.168.32.128"
-      - "peer0.org2.cnabs.com:192.168.32.128"
-      - "peer1.org2.cnabs.com:192.168.32.129"
+      - "orderer.cnabs.com:192.168.8.131"
+      - "peer0.org1.cnabs.com:192.168.8.131"
+      # - "peer1.org1.cnabs.com:192.168.8.132"
+      - "peer0.org2.cnabs.com:192.168.8.132"
+      - "peer1.org2.cnabs.com:192.168.8.131"

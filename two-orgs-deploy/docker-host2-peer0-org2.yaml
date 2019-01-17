@@ -12,7 +12,7 @@ services:
       service: peer-base
     environment: 
       - CORE_PEER_ID=peer0.org2.cnabs.com
-      - CORE_PEER_LOCALMSPID=org2MSP
+      - CORE_PEER_LOCALMSPID=Org2MSP
       - CORE_PEER_ADDRESS=peer0.org2.cnabs.com:8051
       - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org2.cnabs.com:8052
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.cnabs.com:8051
@@ -21,17 +21,17 @@ services:
     command: peer node start
     # peer容器的7052端口用于 chaincode连接到peer节点(容器)
     ports: 
-      - 27051:7051
-      - 27052:7052
-      - 27053:7053
+      - 8051:7051
+      - 8052:7052
+      - 8053:7053
     volumes: 
       - /var/run/:/host/var/run/
       - ./channel-artifacts:/etc/hyperledger/configtx
       - ./crypto-config/peerOrganizations/org2.cnabs.com/users:/etc/hyperledger/msp/users
-      - ./crypto-config/peerOrganizations/org2.cnabs.com/peers/peer1.org2.cnabs.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/org2.cnabs.com/peers/peer0.org2.cnabs.com/msp:/etc/hyperledger/msp/peer
     extra_hosts:
-      - "orderer.cnabs.com:192.168.32.129"
-      - "peer0.org1.cnabs.com:192.168.32.129"
-      - "peer1.org1.cnabs.com:192.168.32.128"
-      - "peer0.org2.cnabs.com:192.168.32.128"
-      - "peer1.org2.cnabs.com:192.168.32.129"
+      - "orderer.cnabs.com:192.168.8.131"
+      - "peer0.org1.cnabs.com:192.168.8.131"
+      - "peer1.org1.cnabs.com:192.168.8.132"
+      # - "peer0.org2.cnabs.com:192.168.8.132"
+      - "peer1.org2.cnabs.com:192.168.8.131"
