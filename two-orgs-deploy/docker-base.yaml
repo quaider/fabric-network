@@ -13,6 +13,8 @@ services:
       - CORE_LOGGING_PEER=debug
       - CORE_CHAINCODE_LOGGING_LEVEL=debug
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      # USELEADERELECTION 和 ORGLEADER 不能同时为true，否则启动报错
+      # 即启用leader选举和直接指定组织leader互斥
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
