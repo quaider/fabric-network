@@ -11,6 +11,13 @@ buildNumber.properties
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
 
+.idea/*
+*/bin/*
+*/.project
+*.log
+*.log.*
+*/.settings
+.settings
 .gradle
 /local.properties
 /.idea/workspace.xml
@@ -30,6 +37,11 @@ gen/
 /*/build/
 proguard/
 *.log
+*/.factorypath
+.classpath
+*/.DS_Store
+.DS_Store
+.vscode/settings.json
 chaincode-demo/gradle/wrapper/
 /chaincode-demo/gradle
 /chaincode-demo/out
