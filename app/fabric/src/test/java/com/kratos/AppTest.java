@@ -1,14 +1,19 @@
 package com.kratos;
 
 import static java.lang.String.format;
+import static org.hyperledger.fabric.sdk.BlockInfo.EnvelopeType.TRANSACTION_ENVELOPE;
+import static org.hyperledger.fabric.sdk.Channel.NOfEvents.createNofEvents;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.protos.peer.Query;
 import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.identity.X509Enrollment;
@@ -17,6 +22,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -24,6 +30,7 @@ import java.security.Security;
 import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.KeySpec;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -46,8 +53,8 @@ public class AppTest {
 
         client.setUserContext(admin);
 
-        Orderer orderer = client.newOrderer("orderer.cnabs.com", "grpc://192.168.8.131:7050");
-        Peer peer = client.newPeer("peer0.org1.cnabs.com", "grpc://192.168.8.131:7051");
+        Orderer orderer = client.newOrderer("orderer.cnabs.com", "grpc://192.168.32.129:7050");
+        Peer peer = client.newPeer("peer0.org1.cnabs.com", "grpc://192.168.32.129:7051");
         Channel channel = client.newChannel("cnabs");
         channel.addPeer(peer);
         channel.addOrderer(orderer);
@@ -65,7 +72,7 @@ public class AppTest {
 //        req.setChaincodeName("mycc");
         ChaincodeID chaincodeID = ChaincodeID.newBuilder().setName("mycc").build();
         req.setChaincodeID(chaincodeID);
-        req.setArgs("invoke", "minus", "user1", "3");
+        req.setArgs("minus", "user1", "3");
         req.setChaincodeVersion("1.0");
         req.setFcn("invoke");
         req.setUserContext(admin);
@@ -77,9 +84,92 @@ public class AppTest {
             if (!ok) throw new RuntimeException("bad Proposal");
         }
 
-        channel.sendTransaction(responses);
+        Iterator<ProposalResponse> iterator = responses.iterator();
+        while (iterator.hasNext()) {
+            ProposalResponse response = iterator.next();
+            String msg = response.getProposalResponse().getResponse().getMessage();
+            System.out.println("===========================");
+            System.out.println(msg);
+        }
 
-        Thread.sleep(2000);
+        Channel.NOfEvents n = createNofEvents();
+
+        channel
+                .sendTransaction(responses, new Channel.TransactionOptions()
+                                .userContext(admin)
+                                .shuffleOrders(false)
+                                .orderers(channel.getOrderers())
+//                        .nOfEvents(n)
+                )
+                .thenApply(transactionEvent -> {
+                    assertTrue(transactionEvent.isValid());
+                    System.out.println("txid:" + transactionEvent.getTransactionID());
+                    return transactionEvent;
+                }).get();
+
+        BlockchainInfo channelInfo = channel.queryBlockchainInfo();
+        String chainCurrentHash = Hex.encodeHexString(channelInfo.getCurrentBlockHash());
+        String chainPreviousHash = Hex.encodeHexString(channelInfo.getPreviousBlockHash());
+        System.out.println(chainCurrentHash + ":" + chainPreviousHash);
+
+        BlockInfo returnedBlock = channel.queryBlockByNumber(channelInfo.getHeight() - 1);
+        String previousHash = Hex.encodeHexString(returnedBlock.getPreviousHash());
+        System.out.println("previousHash:" + previousHash);
+
+        byte[] hashQuery = returnedBlock.getPreviousHash();
+        returnedBlock = channel.queryBlockByHash(hashQuery);
+        assertEquals(channelInfo.getHeight() - 2, returnedBlock.getBlockNumber());
+
+        System.out.println("---------------BlockInfo.EnvelopeInfo");
+        for (BlockInfo.EnvelopeInfo envelopeInfo : returnedBlock.getEnvelopeInfos()) {
+            final String channelId = envelopeInfo.getChannelId();
+            System.out.println("channelId: " + channelId);
+            System.out.println("epoch: " + envelopeInfo.getEpoch());
+            System.out.println("nonce: " + Hex.encodeHexString(envelopeInfo.getNonce()));
+            System.out.println("envelop type: " + envelopeInfo.getType());
+            System.out.println("timestamp: " + envelopeInfo.getTimestamp());
+            System.out.println(envelopeInfo.getCreator().getMspid() + ", " + envelopeInfo.getCreator().getId());
+            if (envelopeInfo.getType() == TRANSACTION_ENVELOPE) {
+                BlockInfo.TransactionEnvelopeInfo transactionEnvelopeInfo = (BlockInfo.TransactionEnvelopeInfo) envelopeInfo;
+                System.out.println("valid: " + transactionEnvelopeInfo.isValid());
+                System.out.println("validationCode: " + transactionEnvelopeInfo.getValidationCode());
+
+                for (BlockInfo.TransactionEnvelopeInfo.TransactionActionInfo transactionActionInfo : transactionEnvelopeInfo.getTransactionActionInfos()) {
+                    for (int i = 0; i < transactionActionInfo.getEndorsementsCount(); ++i) {
+                        BlockInfo.EndorserInfo endorserInfo = transactionActionInfo.getEndorsementInfo(i);
+                        System.out.println("signature: " + Hex.encodeHexString(endorserInfo.getSignature()));
+                        System.out.println(endorserInfo.getMspid() + " : " + endorserInfo.getId());
+
+                        for (int z = 0; z < transactionActionInfo.getChaincodeInputArgsCount(); ++z) {
+                            System.out.println(new String(transactionActionInfo.getChaincodeInputArgs(z), StandardCharsets.UTF_8));
+                        }
+
+                        System.out.println("-----------------RWS");
+                        TxReadWriteSetInfo rwsetInfo = transactionActionInfo.getTxReadWriteSet();
+                        if (rwsetInfo != null) {
+                            for (TxReadWriteSetInfo.NsRwsetInfo nsRwsetInfo : rwsetInfo.getNsRwsetInfos()) {
+                                final String namespace = nsRwsetInfo.getNamespace();
+
+                                // 获取模拟交易执行期间的读写集，包含读集合写集
+                                KvRwset.KVRWSet kvs = nsRwsetInfo.getRwset();
+                                // 获取交易模拟执行期间的读集合(感觉是执行之前的集合)
+                                for (KvRwset.KVRead readList : kvs.getReadsList()) {
+                                    System.out.println("key = " + readList.getKey() + ", blockNum = " + readList.getVersion().getBlockNum() + ", txNum = " + readList.getVersion().getTxNum());
+                                }
+
+                                // 获取交易模拟执行期间的写集合
+                                for (KvRwset.KVWrite write : kvs.getWritesList()) {
+                                    // 这里的value是写之前的值
+                                    System.out.println("key = " + write.getKey() + ", value = " + new String(write.getValue().toByteArray(), StandardCharsets.UTF_8));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
 //        Set<String> peers = client.queryChannels(peer);
 //        List<Query.ChaincodeInfo> chaincodes = client.queryInstalledChaincodes(peer);
 //        for (Query.ChaincodeInfo chaincodeInfo : chaincodes) {

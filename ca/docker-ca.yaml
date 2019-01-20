@@ -1,0 +1,36 @@
+version: "2"
+
+networks:
+  catest:
+
+services:
+
+  fabric-ca-server:
+    image: hyperledger/fabric-ca
+    container_name: fabric-ca-server
+    working_dir: /etc/hyperledger/fabric-ca-server
+    ports:
+      - "7054:7054"
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./data/fabric-ca-server:/etc/hyperledger/fabric-ca-server
+    command: /bin/bash -c '/scripts/setup.sh'
+    networks:
+      - catest  
+
+  setup:
+    container_name: setup
+    image: hyperledger/fabric-ca-tools
+    command: /bin/bash -c 'sleep 99999'
+    # command: /bin/bash -c '/scripts/setup-fabric.sh 2>&1 | tee /$SETUP_LOGFILE; sleep 99999'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - catest
+    depends_on:
+      - fabric-ca-server
