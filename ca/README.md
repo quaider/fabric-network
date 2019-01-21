@@ -69,7 +69,7 @@ export FABRIC_CA_CLIENT_HOME=/etc/hyperledger/fabric-ca-client
 
 ``` shell
 export FABRIC_CA_CLIENT_ID_AFFILIATION=com.cnabs
-export FABRIC_CA_CLIENT_HOME=/data/client/crypto
+export FABRIC_CA_CLIENT_HOME=/data/client/crypto/admin
 # ca-server生成的ca-cert.pem 用于客户端的 FABRIC_CA_CLIENT_TLS_CERTFILES
 export FABRIC_CA_CLIENT_TLS_CERTFILES=/data/client/tls/ca-cert.pem
 fabric-ca-client enroll -d -u https://admin:adminpw@fabric-ca-server:7054

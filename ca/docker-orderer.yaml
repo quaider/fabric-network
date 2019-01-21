@@ -1,0 +1,30 @@
+version: "2"
+
+networks:
+  catest:
+
+services:
+  orderer.cnabs.com:
+    container_name: orderer.cnabs.com
+    image: hyperledger/fabric-ca-orderer
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/client/tls/ca-cert.pem
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/data/channel-artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=/data/client/tls/ca-cert.pem
+      - ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=/data/client/tls/ca-cert.pem
+      - ORDERER_GENERAL_LOGLEVEL=debug
+    command: /bin/bash -c '/scripts/start-orderer.sh'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - catest

@@ -28,9 +28,9 @@ fabric-ca-client register -d --id.name User1@org1.cnabs.com --id.secret passwd
 	mkdir $ORG_MSP_DIR/tlscacerts
 	cp $ORG_MSP_DIR/cacerts/* $ORG_MSP_DIR/tlscacerts
 	
-		### order admin
+		### order admin enroll自带msp目录
 		ORG_ADMIN_HOME=/data/client/crypto/ordererOrganizations/cnabs.com/users/Admin@cnabs.com
-		ORG_ADMIN_CERT=${ORG_MSP_DIR}/admincerts/cert.pem
+		ORG_ADMIN_CERT=${ORG_MSP_DIR}/admincerts/cert.pem #组织的admincerts(目前还不是用户的)
 		export FABRIC_CA_CLIENT_HOME=$ORG_ADMIN_HOME
 		export FABRIC_CA_CLIENT_TLS_CERTFILES=/data/client/tls/ca-cert.pem
 		fabric-ca-client enroll -d -u https://Admin@cnabs.com:passwd@fabric-ca-server:7054
@@ -61,3 +61,10 @@ fabric-ca-client register -d --id.name User1@org1.cnabs.com --id.secret passwd
 
 # enroll部分
 
+
+export FABRIC_CFG_PATH=/data
+ARTIFACTS_DIR=/data/channel-artifacts
+configtxgen -profile TwoOrgsOrdererGenesis -outputBlock $ARTIFACTS_DIR/genesis.block
+configtxgen -profile TwoOrgsChannel -outputCreateChannelTx $ARTIFACTS_DIR/channel.tx -channelID cnabs
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate $ARTIFACTS_DIR/Org1MSPanchors.tx -channelID cnabs -asOrg Org1MSP
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate $ARTIFACTS_DIR/Org2MSPanchors.tx -channelID cnabs -asOrg Org2MSP
