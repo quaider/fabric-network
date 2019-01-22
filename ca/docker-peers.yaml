@@ -153,14 +153,14 @@ services:
     networks:
       - catest
 
-  run:
-    container_name: run
-    image: hyperledger/fabric-ca-tools
-    environment:
-      - GOPATH=/opt/gopath
-    command: /bin/bash -c 'sleep 99999'
-    volumes:
-      - ./scripts:/scripts
-      - ./data:/data
-    networks:
-      - catest
+  # run:
+  #   container_name: run
+  #   image: hyperledger/fabric-ca-tools
+  #   environment:
+  #     - GOPATH=/opt/gopath
+  #   command: /bin/bash -c 'sleep 99999'
+  #   volumes:
+  #     - ./scripts:/scripts
+  #     - ./data:/data
+  #   networks:
+  #     - catest

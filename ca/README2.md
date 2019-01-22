@@ -51,6 +51,7 @@ CLI_TLS_CERT=$CLI_DIR/tls/ca-cert.pem
 首先需要设置2个环境变量 `FABRIC_CA_CLIENT_HOME` 和 `FABRIC_CA_CLIENT_TLS_CERTFILES`
 
 ``` shell
+# /data/client//crypto/admin
 export FABRIC_CA_CLIENT_HOME=$CA_BOOTADMIN_DIR
 export FABRIC_CA_CLIENT_TLS_CERTFILES=$CLI_TLS_CERT
 # 登记引导用户，这将在/data/client/crypto/admin 生成 admin的msp(cacerts、keytore、signcerts)
@@ -138,6 +139,7 @@ fabric-ca-client enroll -d -u https://Admin@cnabs.com:passwd@fabric-ca-server:70
 
 # 准备组织和管理员的admincerts(来自组织的signcerts)、tlscacerts证书
 mkdir -p $(dirname "${ORG_ADMIN_CERT}")   # 即组织内的admincerts目录
+# 组织的 admincerts 来自于 管理员的 signcerts
 cp $ORG_ADMIN_HOME/msp/signcerts/* $ORG_ADMIN_CERT
 # 管理员的 admincerts 来自于 管理员的 signcerts
 mkdir $ORG_ADMIN_HOME/msp/admincerts
@@ -398,4 +400,6 @@ ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --
 CHANNEL_TX_FILE=/data/channel-artifacts/channel.tx
 
 peer channel create --logging-level=DEBUG -c cnabs -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS
+
+# peer channel update -o orderer.cnabs.com:7050 -c cnabs -f /data/channel-artifacts/Org1MSPanchors.tx
 ```

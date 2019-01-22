@@ -14,6 +14,9 @@ services:
     environment:
       - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=fabric-ca-server
+      - FABRIC_CA_SERVER_CSR_HOSTS=fabric-ca-server
+      - FABRIC_CA_SERVER_DEBUG=true
     volumes:
       - ./scripts:/scripts
       - ./data:/data
