@@ -20,7 +20,7 @@ services:
       - ./data/fabric-ca-server:/etc/hyperledger/fabric-ca-server
     command: /bin/bash -c '/scripts/setup.sh'
     networks:
-      - catest  
+      - catest
 
   setup:
     container_name: setup

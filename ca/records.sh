@@ -4,7 +4,7 @@ fabric-ca-client enroll -d -u https://admin:adminpw@fabric-ca-server:7054
 
 
 # order
-export FABRIC_CA_CLIENT_ID_1AFFILIATION=com.cnabs
+export FABRIC_CA_CLIENT_ID_AFFILIATION=com.cnabs
 fabric-ca-client register -d --id.name orderer.cnabs.com --id.secret passwd --id.type orderer
 # order admin
 fabric-ca-client register -d --id.name Admin@cnabs.com --id.secret passwd --id.attrs "admin=true:ecert"
