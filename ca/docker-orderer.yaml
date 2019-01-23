@@ -8,8 +8,8 @@ services:
     container_name: orderer.cnabs.com
     image: hyperledger/fabric-ca-orderer
     environment:
-      # - FABRIC_CA_CLIENT_HOME=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com
-      # - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/client/tls/ca-cert.pem
+      - FABRIC_CA_CLIENT_HOME=/data/client/crypto/ordererOrganizations/cnabs.com/orderers/orderer.cnabs.com
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/client/tls/ca-cert.pem
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/data/channel-artifacts/genesis.block

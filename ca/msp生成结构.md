@@ -1,6 +1,8 @@
 
 # msp 规划
 
+目标：利用 `fabric-ca` 生成的msp与使用 `cryptogen` 工具生成的 msp 在结构上保持一致。
+
 ## 组织结构
 <pre>
 com

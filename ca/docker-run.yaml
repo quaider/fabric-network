@@ -10,6 +10,10 @@ services:
     image: hyperledger/fabric-ca-tools
     environment:
       - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=run
       - CORE_PEER_ADDRESS=peer0.org1.cnabs.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_TLS_ENABLED=true
@@ -21,8 +25,11 @@ services:
       - CORE_PEER_TLS_CLIENTCERT_FILE=/data/client/crypto/peerOrganizations/org1.cnabs.com/peers/peer0.org1.cnabs.com/tls/peer0-org1-client.crt
       - CORE_PEER_TLS_CLIENTKEY_FILE=/data/client/crypto/peerOrganizations/org1.cnabs.com/peers/peer0.org1.cnabs.com/tls/peer0-org1-client.key
     command: /bin/bash -c 'sleep 99999'
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     volumes:
+      - /var/run/:/host/var/run/
       - ./scripts:/scripts
       - ./data:/data
+      - ./data/chaincode-demo/:/opt/gopath/src/github.com/chaincode
     networks:
       - catest
