@@ -165,7 +165,7 @@ ORG_ADMIN_CERT=${ORG_MSP_DIR}/admincerts/cert.pem
 
 export FABRIC_CA_CLIENT_HOME=$ORG_ADMIN_HOME
 export FABRIC_CA_CLIENT_TLS_CERTFILES=$CLI_TLS_CERT
-# 登记cnabs.com组织的管理员，这会在 组织 msp内填充其msp证书，如 cacerts、keystore、signcerts
+# 登记cnabs.com组织的管理员，这会在 组织管理员用户msp内填充其msp证书，如 cacerts、keystore、signcerts
 # 但是没有admincerts、tlscacerts证书信息，因此还需准备这2个目录的文件(采用复制)
 fabric-ca-client enroll -d -u https://Admin@cnabs.com:passwd@fabric-ca-server:7054
 
@@ -433,13 +433,15 @@ ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --
 CHANNEL_TX_FILE=/data/channel-artifacts/channel.tx
 
 peer channel create --logging-level=DEBUG -c cnabs -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS
+
 peer channel join -b cnabs.block
+
 peer channel update -o orderer.cnabs.com:7050 -c cnabs -f /data/channel-artifacts/Org1MSPanchors.tx $ORDERER_CONN_ARGS
 
 
 # 切换到其他节点, 重复上述步骤即可（通道仅创建1次，各组织锚节点各更新1次）
 
-export CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/
+export CC_SRC_PATH=/opt/gopath/src/github.com/chaincode/build/libs/chaincode.jar
 peer chaincode install -n mycc -v 1.0 -l java -p ${CC_SRC_PATH}
 
 peer chaincode instantiate -C cnabs -n mycc -v 1.0 -c '{"Args":["init"]}' -P $ORDERER_CONN_ARGS -P "OR ('Org1MSP.peer','Org1MSP.admin','Org1MSP.member')"
