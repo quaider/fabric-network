@@ -47,3 +47,5 @@ chaincode-demo/gradle/wrapper/
 /chaincode-demo/out
 crypto-config
 channel-artifacts
+/chaincode-demo/.idea
+/chaincode-demo/.gradle
