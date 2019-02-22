@@ -33,7 +33,7 @@ configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./channel-artifacts/
 
 ### Create channel
 
-是否一定是Admin用户的签名？，应该是跟policy有关
+是否一定是Admin用户的签名(测试过程中只有Admin用户才能操作通道创建、链码安装、链码实例化)？，应该是跟policy有关
 
 ```shell
 export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.cnabs.com/msp
